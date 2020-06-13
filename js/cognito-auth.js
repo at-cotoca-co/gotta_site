@@ -4,6 +4,8 @@ var WildRydes = window.WildRydes || {};
 
 (function scopeWrapper($) {
     var signinUrl = '/signin.html';
+    var indexUrl = '/index.html';
+    var stockUrl = '/stock.html';
 
     var poolData = {
         UserPoolId: _config.cognito.userPoolId,
@@ -26,7 +28,12 @@ var WildRydes = window.WildRydes || {};
     }
 
     WildRydes.signOut = function signOut() {
-        userPool.getCurrentUser().signOut();
+        var cognitoUser = userPool.getCurrentUser();
+        if (cognitoUser) {
+            cognitoUser.signOut();
+            window.location.href = indexUrl;
+        }
+        window.location.href = indexUrl;
     };
 
     WildRydes.authToken = new Promise(function fetchCurrentAuthToken(resolve, reject) {
@@ -112,6 +119,7 @@ var WildRydes = window.WildRydes || {};
         $('#signinForm').submit(handleSignin);
         $('#registrationForm').submit(handleRegister);
         $('#verifyForm').submit(handleVerify);
+        $('#signoutForm').click(WildRydes.signOut);
     });
 
     function handleSignin(event) {
@@ -121,7 +129,7 @@ var WildRydes = window.WildRydes || {};
         signin(email, password,
             function signinSuccess() {
                 console.log('Successfully Logged In');
-                window.location.href = 'ride.html';
+                window.location.href = stockUrl;
             },
             function signinError(err) {
                 alert(err);
